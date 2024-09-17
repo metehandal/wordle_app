@@ -1,19 +1,11 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Wordle Oyunu</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <div class="game-container">
-    <!-- Tahmin Kutucukları -->
     <div class="guess-boxes">
       <div class="guess-box" *ngFor="let letter of guessArray; let i = index">
         {{ letter || "_" }}
       </div>
     </div>
 
-    <!-- Sanal Klavye -->
     <app-keyboard (letterClicked)="handleKeyboardInput($event)"></app-keyboard>
   </div>
 </ion-content>

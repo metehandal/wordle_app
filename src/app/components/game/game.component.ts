@@ -12,7 +12,7 @@ export class GameComponent implements OnInit {
   targetWord: string = '';
   attempts: string[] = [];
   maxAttempts: number = 6;
-  guessArray: string[] = Array(5).fill(''); // 5 haneli tahmin
+  guessArray: string[] = Array(5).fill('');
 
   guessForm: FormGroup;
 
@@ -26,6 +26,8 @@ export class GameComponent implements OnInit {
     this.wordList = await this.loadWords();
     await this.pickRandomWord();
   }
+
+  
 
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -60,6 +62,7 @@ export class GameComponent implements OnInit {
 
   checkGuess() {
     const currentGuess = this.guessArray.join('').trim().toLowerCase();
+    console.log(currentGuess);
 
     if (currentGuess.length !== 5) {
       alert('Tahmin edilen kelime 5 harfli olmalı!');
@@ -79,18 +82,22 @@ export class GameComponent implements OnInit {
       alert('Yanlış tahmin, tekrar deneyin!');
     }
 
-    this.guessArray = Array(5).fill(''); // Formu sıfırla
+    this.guessArray = Array(5).fill('');
   }
 
   handleKeyboardInput(letter: string) {
+    const currentIndex = this.getCurrentPosition();
     if (letter === 'DELETE') {
-      this.guessArray = this.guessArray.map((char, index) => index === this.getCurrentPosition() ? '' : char);
+      if (currentIndex > 0) {
+        this.guessArray[currentIndex - 1] = ''; 
+      }
     } else if (letter === 'SUBMIT') {
       this.checkGuess();
     } else if (this.getCurrentPosition() < 5) {
       this.guessArray[this.getCurrentPosition()] = letter;
     }
   }
+  
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -105,6 +112,7 @@ export class GameComponent implements OnInit {
   }
 
   getCurrentPosition(): number {
-    return this.guessArray.findIndex(letter => letter === '');
+    const index = this.guessArray.findIndex(letter => letter === '');
+    return index === -1 ? this.guessArray.length : index;
   }
 }

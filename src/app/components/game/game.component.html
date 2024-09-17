@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Wordle Oyunu</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="game-container">
+    <form [formGroup]="guessForm" (ngSubmit)="checkGuess()">
+      <ion-input
+        placeholder="Kelime tahmin et"
+        formControlName="guess"
+      ></ion-input>
+      <ion-button type="submit">Tahmin Et</ion-button>
+    </form>
+
+    <div *ngFor="let attempt of attempts">
+      <p>{{ attempt }}</p>
+    </div>
+  </div>
+</ion-content>

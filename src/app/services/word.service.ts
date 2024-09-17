@@ -6,19 +6,16 @@ import { map, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class WordService {
-  private tdkUrl = 'https://sozluk.gov.tr/gts?ara=';
-
   constructor(private http: HttpClient) {}
 
-  getWords(): Observable<string[]> {
-    return this.http.get('assets/words.txt', { responseType: 'text' })
-      .pipe(
-        map(data => data.split('\n').filter(word => word.trim().length === 5))
-      );
+  getWords(): Observable<string> {
+    return this.http.get('assets/words.txt', { responseType: 'text' });
   }
 
   checkWordTDK(word: string): Observable<any> {
-    return this.http.get<any>(this.tdkUrl + word);
+    return this.http.get<any>('https://sozluk.gov.tr/gts?ara=' + word);
   }
+  
 }
+
 

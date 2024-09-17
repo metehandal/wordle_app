@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { GameComponent } from './game/game.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { KeyboardComponent } from './keyboard/keyboard.component';
 
 @NgModule({
   declarations: [
-    GameComponent
+    GameComponent,
+    KeyboardComponent
   ],
   imports: [
     CommonModule,
@@ -15,7 +17,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule
   ],
   exports: [
-    GameComponent
+    GameComponent,
+    KeyboardComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

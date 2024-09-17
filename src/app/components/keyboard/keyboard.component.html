@@ -1,0 +1,11 @@
+<div class="keyboard">
+  <div class="row">
+    <button *ngFor="let letter of letters" (click)="onLetterClick(letter)">
+      {{ letter }}
+    </button>
+  </div>
+  <div class="row">
+    <button (click)="onDeleteClick()">←</button>
+    <button (click)="onSubmitClick()">Submit</button>
+  </div>
+</div>

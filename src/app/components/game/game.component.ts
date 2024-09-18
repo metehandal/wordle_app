@@ -102,7 +102,7 @@ export class GameComponent implements OnInit {
     }
   
     try {
-      const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase()).toPromise();
+      const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase('tr-TR')).toPromise();
       if (data.error) {
         const toast = await this.toastCtrl.create({
           message: 'Bu kelime TDK’da bulunamadı',

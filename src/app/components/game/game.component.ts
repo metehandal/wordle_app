@@ -84,9 +84,7 @@ export class GameComponent implements OnInit {
   }
 
   async checkGuess() {
-    const currentGuess = this.guessArray.join('').trim().toUpperCase(); // Büyük harfe çevir
-
-    console.log('Tahmin:', currentGuess);
+    const currentGuess = this.guessArray.join('').trim().toUpperCase();
     if (currentGuess.length !== 5) {
       const toast = await this.toastCtrl.create({
         message: 'Yetersiz harf',
@@ -157,9 +155,7 @@ export class GameComponent implements OnInit {
   }
   
 
-  getCurrentPosition(): number {
-    return this.guessArray.findIndex(letter => letter === '');
-  }
+
 
   normalizeTurkishCharacter(letter: string): string {
     const mapping: { [key: string]: string } = {
@@ -175,10 +171,11 @@ export class GameComponent implements OnInit {
   }
   
   handleKeyboardInput(letter: string) {
-    console.log('Tus: ', letter);
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
-      if (currentPosition >= 0) {
+      console.log('currentPosition', currentPosition);
+  
+      if (currentPosition >= 0 && currentPosition < this.guessArray.length) {
         this.guessArray[currentPosition] = ''; 
       }
     } else if (letter === 'SUBMIT') {
@@ -191,6 +188,14 @@ export class GameComponent implements OnInit {
       }
     }
   }
+  
+
+  getCurrentPosition(): number {
+    const position = this.guessArray.findIndex(letter => letter === '');
+    return position === -1 ? this.guessArray.length : position;
+  }
+  
+  
   
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

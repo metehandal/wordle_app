@@ -8,13 +8,17 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class KeyboardComponent {
   @Output() letterClicked = new EventEmitter<string>();
 
-  letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  // Türkçe klavye dizilimi
+  row1 = 'qwertyuıopğü'.split('');
+  row2 = 'asdfghjklşi'.split('');
+  row3 = 'zxcvbnmöç'.split('');
 
   onLetterClick(letter: string) {
     this.letterClicked.emit(letter);
   }
 
   onDeleteClick() {
+    console.log('DELETE');
     this.letterClicked.emit('DELETE');
   }
 

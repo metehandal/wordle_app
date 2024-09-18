@@ -1,11 +1,25 @@
 <div class="keyboard">
   <div class="row">
-    <button *ngFor="let letter of letters" (click)="onLetterClick(letter)">
+    <button *ngFor="let letter of row1" (click)="onLetterClick(letter)">
       {{ letter }}
     </button>
   </div>
   <div class="row">
-    <button (click)="onDeleteClick()">←</button>
-    <button (click)="onSubmitClick()">Submit</button>
+    <button *ngFor="let letter of row2" (click)="onLetterClick(letter)">
+      {{ letter }}
+    </button>
+  </div>
+  <div class="row">
+    <button *ngFor="let letter of row3" (click)="onLetterClick(letter)">
+      {{ letter }}
+    </button>
+  </div>
+  <div class="actions">
+    <button (click)="onDeleteClick()">
+      <ion-icon name="backspace-outline"></ion-icon>
+    </button>
+    <button (click)="onSubmitClick()">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </button>
   </div>
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { WordService } from '../../services/word.service';
+import { AlertController, ToastController } from '@ionic/angular';
 
 interface Guess {
   letter: string;
@@ -15,12 +16,12 @@ interface Guess {
 export class GameComponent implements OnInit {
   wordList: string[] = [];
   targetWord: string = '';
-  attempts: Guess[][] = []; // Tahminleri ve renklerini tutan dizi
+  attempts: Guess[][] = [];
   maxAttempts: number = 6;
-  guessArray: string[] = Array(5).fill(''); // 5 harfli tahmin için boş array
+  guessArray: string[] = Array(5).fill('');
   guessForm: FormGroup;
 
-  constructor(private wordService: WordService) {
+  constructor(private wordService: WordService, private toastCtrl: ToastController, private alertCtrl: AlertController) {
     this.guessForm = new FormGroup({
       guess: new FormControl('')
     });
@@ -84,16 +85,19 @@ export class GameComponent implements OnInit {
     }
   }
 
-  checkGuess() {
+  async checkGuess() {
     const currentGuess = this.guessArray.join('').trim().toLowerCase();
   
     if (currentGuess.length !== 5) {
-      alert('Tahmin edilen kelime 5 harfli olmalı!');
-      return;
-    }
+      const toast = await this.toastCtrl.create({
+        message: 'Kelimelerin uzunluğu 5 harften oluşmalıdır.',
+        duration: 2000,
+        color: 'danger',
+        position: 'top',
+        animated: true,
+      });
   
-    if (this.attempts.length >= this.maxAttempts) {
-      alert('Deneme hakkınız bitti!');
+      toast.present();
       return;
     }
   
@@ -110,23 +114,41 @@ export class GameComponent implements OnInit {
     this.attempts.push(guessWithColors);
   
     if (currentGuess === this.targetWord) {
-      alert('Tebrikler, doğru tahmin ettiniz!');
+      const alert = await this.alertCtrl.create({
+        header: 'Tebrikler!',
+        message: 'Doğru tahmin ettiniz!',
+        buttons: ['Tamam'],
+      });
+  
+      await alert.present();
+      return; 
+    }
+  
+    if (this.attempts.length >= this.maxAttempts) {
+      const alert = await this.alertCtrl.create({
+        header: 'Deneme Hakkınız Bitti!',
+        message: `Maalesef kelimeyi bulamadınız. Doğru kelime: ${this.targetWord}`,
+        buttons: ['Tamam'],
+      });
+  
+      await alert.present();
     }
   
     this.guessArray = Array(5).fill('');
   }
+  
   
 
   handleKeyboardInput(letter: string) {
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
       if (currentPosition >= 0) {
-        this.guessArray[currentPosition] = ''; // Son harfi siler
+        this.guessArray[currentPosition] = ''; 
       }
     } else if (letter === 'SUBMIT') {
-      this.checkGuess(); // Tahmin kontrol edilir
+      this.checkGuess(); 
     } else if (this.getCurrentPosition() < 5) {
-      this.guessArray[this.getCurrentPosition()] = letter.toUpperCase(); // Harfi büyük olarak ekler
+      this.guessArray[this.getCurrentPosition()] = letter.toUpperCase(); 
     }
   }
   

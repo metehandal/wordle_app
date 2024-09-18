@@ -1,11 +1,27 @@
 <ion-content>
   <div class="game-container">
+    <!-- Denemeler -->
+    <div
+      class="guess-boxes"
+      *ngFor="let attempt of attempts; let attemptIndex = index"
+    >
+      <div
+        class="guess-box"
+        *ngFor="let guess of attempt"
+        [ngClass]="guess.color"
+      >
+        {{ guess.letter }}
+      </div>
+    </div>
+
+    <!-- Mevcut Tahmin Kutucukları -->
     <div class="guess-boxes">
-      <div class="guess-box" *ngFor="let letter of guessArray; let i = index">
+      <div class="guess-box" *ngFor="let letter of guessArray">
         {{ letter || "_" }}
       </div>
     </div>
 
+    <!-- Klavye -->
     <app-keyboard (letterClicked)="handleKeyboardInput($event)"></app-keyboard>
   </div>
 </ion-content>

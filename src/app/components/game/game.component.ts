@@ -2,6 +2,11 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { WordService } from '../../services/word.service';
 
+interface Guess {
+  letter: string;
+  color: string; // 'green', 'yellow', or 'gray'
+}
+
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -10,10 +15,9 @@ import { WordService } from '../../services/word.service';
 export class GameComponent implements OnInit {
   wordList: string[] = [];
   targetWord: string = '';
-  attempts: string[] = [];
+  attempts: Guess[][] = []; // Tahminleri ve renklerini tutan dizi
   maxAttempts: number = 6;
-  guessArray: string[] = Array(5).fill('');
-
+  guessArray: string[] = Array(5).fill(''); // 5 harfli tahmin için boş array
   guessForm: FormGroup;
 
   constructor(private wordService: WordService) {
@@ -26,8 +30,6 @@ export class GameComponent implements OnInit {
     this.wordList = await this.loadWords();
     await this.pickRandomWord();
   }
-
-  
 
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -62,7 +64,6 @@ export class GameComponent implements OnInit {
 
   checkGuess() {
     const currentGuess = this.guessArray.join('').trim().toLowerCase();
-    console.log(currentGuess);
 
     if (currentGuess.length !== 5) {
       alert('Tahmin edilen kelime 5 harfli olmalı!');
@@ -74,22 +75,34 @@ export class GameComponent implements OnInit {
       return;
     }
 
-    this.attempts.push(currentGuess);
+    const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
+      if (letter === this.targetWord[index]) {
+        // Harf doğru pozisyonda
+        return { letter, color: 'green' };
+      } else if (this.targetWord.includes(letter)) {
+        // Harf kelimede var ama yanlış pozisyonda
+        return { letter, color: 'yellow' };
+      } else {
+        // Harf kelimede yok
+        return { letter, color: 'gray' };
+      }
+    });
+
+    this.attempts.push(guessWithColors);
 
     if (currentGuess === this.targetWord) {
       alert('Tebrikler, doğru tahmin ettiniz!');
-    } else {
-      alert('Yanlış tahmin, tekrar deneyin!');
     }
 
+    // Formu sıfırla
     this.guessArray = Array(5).fill('');
   }
 
   handleKeyboardInput(letter: string) {
-    const currentIndex = this.getCurrentPosition();
     if (letter === 'DELETE') {
-      if (currentIndex > 0) {
-        this.guessArray[currentIndex - 1] = ''; 
+      const currentPosition = this.getCurrentPosition() - 1;
+      if (currentPosition >= 0) {
+        this.guessArray[currentPosition] = '';
       }
     } else if (letter === 'SUBMIT') {
       this.checkGuess();
@@ -97,7 +110,6 @@ export class GameComponent implements OnInit {
       this.guessArray[this.getCurrentPosition()] = letter;
     }
   }
-  
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -112,7 +124,6 @@ export class GameComponent implements OnInit {
   }
 
   getCurrentPosition(): number {
-    const index = this.guessArray.findIndex(letter => letter === '');
-    return index === -1 ? this.guessArray.length : index;
+    return this.guessArray.findIndex(letter => letter === '');
   }
 }

@@ -52,8 +52,6 @@ export class GameComponent implements OnInit {
     return emptyRows;
   }
   
-  
-
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.wordService.getWords().subscribe(
@@ -96,8 +94,26 @@ export class GameComponent implements OnInit {
         position: 'top',
         animated: true,
       });
-  
       toast.present();
+      return;
+    }
+  
+    try {
+      const data = await this.wordService.checkWordTDK(currentGuess).toPromise();
+      if (data.error) {
+        const toast = await this.toastCtrl.create({
+          message: 'Bu kelime TDK’da bulunamadı.',
+          duration: 2000,
+          color: 'danger',
+          position: 'top',
+          animated: true,
+        });
+        toast.present();
+        this.guessArray = Array(5).fill(''); // Geçersiz kelime olduğu için guessArray'i sıfırla
+        return;
+      }
+    } catch (error) {
+      console.error('Kelime kontrolü sırasında bir hata oluştu:', error);
       return;
     }
   
@@ -119,9 +135,8 @@ export class GameComponent implements OnInit {
         message: 'Doğru tahmin ettiniz!',
         buttons: ['Tamam'],
       });
-  
       await alert.present();
-      return; 
+      return;
     }
   
     if (this.attempts.length >= this.maxAttempts) {
@@ -130,15 +145,12 @@ export class GameComponent implements OnInit {
         message: `Maalesef kelimeyi bulamadınız. Doğru kelime: ${this.targetWord}`,
         buttons: ['Tamam'],
       });
-  
       await alert.present();
     }
   
     this.guessArray = Array(5).fill('');
   }
   
-  
-
   handleKeyboardInput(letter: string) {
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
@@ -152,8 +164,10 @@ export class GameComponent implements OnInit {
     }
   }
   
+  getCurrentPosition(): number {
+    return this.guessArray.findIndex(letter => letter === '');
+  }
   
-
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     const letter = event.key.toLowerCase();
@@ -166,7 +180,4 @@ export class GameComponent implements OnInit {
     }
   }
 
-  getCurrentPosition(): number {
-    return this.guessArray.findIndex(letter => letter === '');
-  }
 }

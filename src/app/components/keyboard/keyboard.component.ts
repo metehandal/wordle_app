@@ -9,7 +9,7 @@ export class KeyboardComponent {
   @Output() letterClicked = new EventEmitter<string>();
 
   // Türkçe klavye dizilimi
-  row1 = 'qwertyuıopğü'.split('');
+  row1 = 'ertyuıopğü'.split('');
   row2 = 'asdfghjklşi'.split('');
   row3 = 'zxcvbnmöç'.split('');
 

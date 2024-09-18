@@ -88,11 +88,13 @@ export class GameComponent implements OnInit {
   
     if (currentGuess.length !== 5) {
       const toast = await this.toastCtrl.create({
-        message: 'Kelimelerin uzunluğu 5 harften oluşmalıdır.',
-        duration: 2000,
-        color: 'danger',
+        message: 'Yetersiz harf',
+        duration: 1500,
         position: 'top',
+        mode: "ios",
         animated: true,
+        icon: 'warning',
+        color: "danger"
       });
       toast.present();
       return;
@@ -102,14 +104,16 @@ export class GameComponent implements OnInit {
       const data = await this.wordService.checkWordTDK(currentGuess).toPromise();
       if (data.error) {
         const toast = await this.toastCtrl.create({
-          message: 'Bu kelime TDK’da bulunamadı.',
-          duration: 2000,
-          color: 'danger',
+          message: 'Bu kelime TDK’da bulunamadı',
+          duration: 1500,
           position: 'top',
+          mode: "ios",
           animated: true,
+          icon: 'warning',
+          color: "danger"
         });
         toast.present();
-        this.guessArray = Array(5).fill(''); // Geçersiz kelime olduğu için guessArray'i sıfırla
+        this.guessArray = Array(5).fill(''); 
         return;
       }
     } catch (error) {

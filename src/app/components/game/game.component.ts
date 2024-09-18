@@ -55,7 +55,7 @@ export class GameComponent implements OnInit {
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.wordService.getWords().subscribe(
-        (words: string) => resolve(words.split('\n').map(word => word.trim().toLowerCase())),
+        (words: string) => resolve(words.split('\n').map(word => word.trim().toUpperCase())), // Büyük harfe çevir
         (error) => reject(error)
       );
     });
@@ -84,8 +84,9 @@ export class GameComponent implements OnInit {
   }
 
   async checkGuess() {
-    const currentGuess = this.guessArray.join('').trim().toLowerCase();
-  
+    const currentGuess = this.guessArray.join('').trim().toUpperCase(); // Büyük harfe çevir
+
+    console.log('Tahmin:', currentGuess);
     if (currentGuess.length !== 5) {
       const toast = await this.toastCtrl.create({
         message: 'Yetersiz harf',
@@ -101,7 +102,7 @@ export class GameComponent implements OnInit {
     }
   
     try {
-      const data = await this.wordService.checkWordTDK(currentGuess).toPromise();
+      const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase()).toPromise();
       if (data.error) {
         const toast = await this.toastCtrl.create({
           message: 'Bu kelime TDK’da bulunamadı',
@@ -155,7 +156,26 @@ export class GameComponent implements OnInit {
     this.guessArray = Array(5).fill('');
   }
   
+
+  getCurrentPosition(): number {
+    return this.guessArray.findIndex(letter => letter === '');
+  }
+
+  normalizeTurkishCharacter(letter: string): string {
+    const mapping: { [key: string]: string } = {
+      'ı': 'I', 
+      'i': 'İ', 
+      'ç': 'Ç',
+      'ğ': 'Ğ',
+      'ö': 'Ö',
+      'ş': 'Ş',
+      'ü': 'Ü'
+    };
+    return mapping[letter] || letter.toUpperCase();
+  }
+  
   handleKeyboardInput(letter: string) {
+    console.log('Tus: ', letter);
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
       if (currentPosition >= 0) {
@@ -164,24 +184,25 @@ export class GameComponent implements OnInit {
     } else if (letter === 'SUBMIT') {
       this.checkGuess(); 
     } else if (this.getCurrentPosition() < 5) {
-      this.guessArray[this.getCurrentPosition()] = letter.toUpperCase(); 
+      const normalizedLetter = this.normalizeTurkishCharacter(letter);
+      const allowedChars = /^[A-ZÇĞİÖŞÜ]$/;
+      if (allowedChars.test(normalizedLetter)) {
+        this.guessArray[this.getCurrentPosition()] = normalizedLetter; 
+      }
     }
-  }
-  
-  getCurrentPosition(): number {
-    return this.guessArray.findIndex(letter => letter === '');
   }
   
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    const letter = event.key.toLowerCase();
-    if (letter === 'backspace') {
+    const letter = event.key;
+    const normalizedLetter = this.normalizeTurkishCharacter(letter);
+    if (letter === 'Backspace') {
       this.handleKeyboardInput('DELETE');
-    } else if (letter === 'enter') {
+    } else if (letter === 'Enter') {
       this.handleKeyboardInput('SUBMIT');
-    } else if (/[a-z]/.test(letter)) {
-      this.handleKeyboardInput(letter);
+    } else if (/^[A-ZÇĞİÖŞÜ]$/.test(normalizedLetter)) {
+      this.handleKeyboardInput(normalizedLetter);
     }
   }
-
+  
 }

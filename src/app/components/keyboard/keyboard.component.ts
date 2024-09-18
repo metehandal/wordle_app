@@ -9,9 +9,9 @@ export class KeyboardComponent {
   @Output() letterClicked = new EventEmitter<string>();
 
   // Türkçe klavye dizilimi
-  row1 = 'ertyuıopğü'.split('');
-  row2 = 'asdfghjklşi'.split('');
-  row3 = 'zxcvbnmöç'.split('');
+  row1 = 'ERTYUİOPĞÜ'.split('');
+  row2 = 'ASDFGHJKLŞİ'.split('');
+  row3 = 'ZXCVBNMÖÇ'.split('');
 
   onLetterClick(letter: string) {
     this.letterClicked.emit(letter);

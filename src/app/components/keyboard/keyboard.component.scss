@@ -1,19 +1,31 @@
 .keyboard {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
 
   .row {
     display: flex;
     margin-bottom: 5px;
 
     button {
+      width: 40px;
+      height: 40px;
       margin: 2px;
       padding: 10px;
       font-size: 16px;
       border-radius: 5px;
       cursor: pointer;
+    }
+
+    @media screen and (max-width: 600px) {
+      button {
+        width: 30px;
+        height: 40px;
+      }
     }
   }
 

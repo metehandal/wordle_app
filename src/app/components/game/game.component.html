@@ -1,29 +1,25 @@
-<ion-content>
-  <div class="game-container">
-    <!-- Denemeler -->
+<div class="game-container">
+  <div class="guess-container">
     <div class="guess-boxes" *ngFor="let attempt of attempts">
       <div
         class="guess-box"
         *ngFor="let guess of attempt"
         [ngClass]="guess.color"
       >
-        {{ guess.letter || "_" }}
+        {{ guess.letter }}
       </div>
     </div>
 
-    <!-- Mevcut Tahmin Kutucukları -->
     <div class="guess-boxes" *ngIf="attempts.length < maxAttempts">
       <div class="guess-box" *ngFor="let letter of guessArray">
-        {{ letter || "_" }}
+        {{ letter }}
       </div>
     </div>
 
-    <!-- Boş Deneme Kutucukları -->
     <div class="guess-boxes" *ngFor="let emptyAttempt of getEmptyAttemptRows()">
-      <div class="guess-box" *ngFor="let empty of emptyAttempt">_</div>
+      <div class="guess-box" *ngFor="let empty of emptyAttempt"></div>
     </div>
-
-    <!-- Klavye -->
-    <app-keyboard (letterClicked)="handleKeyboardInput($event)"></app-keyboard>
   </div>
-</ion-content>
+
+  <app-keyboard (letterClicked)="handleKeyboardInput($event)"></app-keyboard>
+</div>

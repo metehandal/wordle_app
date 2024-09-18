@@ -31,6 +31,28 @@ export class GameComponent implements OnInit {
     await this.pickRandomWord();
   }
 
+  getAttemptRows(): Guess[][] {
+    const rows = [...this.attempts]; // Denenmiş kelimeleri al
+    
+    // Boş deneme satırlarını ekle
+    while (rows.length < this.maxAttempts) {
+      const emptyRow: Guess[] = Array(5).fill({ letter: '', color: 'gray' });
+      rows.push(emptyRow);
+    }
+  
+    return rows;
+  }
+
+  getEmptyAttemptRows(): any[] {
+    const emptyRows = [];
+    for (let i = this.attempts.length + 1; i < this.maxAttempts; i++) {
+      emptyRows.push(Array(5).fill('')); // 5 harfli boş kutular
+    }
+    return emptyRows;
+  }
+  
+  
+
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.wordService.getWords().subscribe(
@@ -64,52 +86,51 @@ export class GameComponent implements OnInit {
 
   checkGuess() {
     const currentGuess = this.guessArray.join('').trim().toLowerCase();
-
+  
     if (currentGuess.length !== 5) {
       alert('Tahmin edilen kelime 5 harfli olmalı!');
       return;
     }
-
+  
     if (this.attempts.length >= this.maxAttempts) {
       alert('Deneme hakkınız bitti!');
       return;
     }
-
+  
     const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
       if (letter === this.targetWord[index]) {
-        // Harf doğru pozisyonda
         return { letter, color: 'green' };
       } else if (this.targetWord.includes(letter)) {
-        // Harf kelimede var ama yanlış pozisyonda
         return { letter, color: 'yellow' };
       } else {
-        // Harf kelimede yok
         return { letter, color: 'gray' };
       }
     });
-
+  
     this.attempts.push(guessWithColors);
-
+  
     if (currentGuess === this.targetWord) {
       alert('Tebrikler, doğru tahmin ettiniz!');
     }
-
-    // Formu sıfırla
+  
     this.guessArray = Array(5).fill('');
   }
+  
 
   handleKeyboardInput(letter: string) {
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
       if (currentPosition >= 0) {
-        this.guessArray[currentPosition] = '';
+        this.guessArray[currentPosition] = ''; // Son harfi siler
       }
     } else if (letter === 'SUBMIT') {
-      this.checkGuess();
+      this.checkGuess(); // Tahmin kontrol edilir
     } else if (this.getCurrentPosition() < 5) {
-      this.guessArray[this.getCurrentPosition()] = letter;
+      this.guessArray[this.getCurrentPosition()] = letter.toUpperCase(); // Harfi büyük olarak ekler
     }
   }
+  
+  
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

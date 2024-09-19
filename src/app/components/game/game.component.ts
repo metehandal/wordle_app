@@ -23,7 +23,8 @@ export class GameComponent implements OnInit {
   guessForm: FormGroup;
   gameEnded: boolean = false; 
   keyboardLetterColors: { [key: string]: string } = {};
-
+  isWinner: boolean = false;
+  confettiArray: any[] = [];
 
   constructor(private wordService: WordService, private toastCtrl: ToastController, private alertCtrl: AlertController) {
     this.guessForm = new FormGroup({
@@ -76,7 +77,6 @@ export class GameComponent implements OnInit {
         if (data && data.length > 0) {
           this.targetWord = randomWord;
           this.targetWordData = data[0];
-          console.log('assssssssssssssss', this.targetWordData);
           wordValid = true;
           console.log('Günlük kelime belirlendi:', this.targetWord);
         } else {
@@ -89,8 +89,8 @@ export class GameComponent implements OnInit {
   }
 
   async checkGuess() {
-    if (this.gameEnded) return; 
-  
+    if (this.gameEnded) return;
+
     const currentGuess = this.guessArray.join('').trim().toUpperCase();
     if (currentGuess.length !== 5) {
       const toast = await this.toastCtrl.create({
@@ -105,7 +105,7 @@ export class GameComponent implements OnInit {
       toast.present();
       return;
     }
-  
+
     try {
       const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase('tr-TR')).toPromise();
       if (data.error) {
@@ -119,61 +119,75 @@ export class GameComponent implements OnInit {
           color: 'danger'
         });
         toast.present();
-        this.guessArray = Array(5).fill(''); 
+        this.guessArray = Array(5).fill('');
         return;
       }
     } catch (error) {
       console.error('Kelime kontrolü sırasında bir hata oluştu:', error);
       return;
     }
-  
+
     const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
-      let color = 'gray';  
-  
+      let color = 'gray';
+
       if (letter === this.targetWord[index]) {
         color = 'green';
       } else if (this.targetWord.includes(letter)) {
         color = 'yellow';
       }
-  
+
       if (!this.keyboardLetterColors[letter] || this.keyboardLetterColors[letter] === 'gray') {
         this.keyboardLetterColors[letter] = color;
       }
-  
+
       return { letter, color };
     });
 
-  
     if (!this.gameEnded) {
       this.attempts.push(guessWithColors);
-  
+
       if (currentGuess === this.targetWord) {
-        this.gameEnded = true; 
+        this.gameEnded = true;
+        this.isWinner = true; // Winner flag
+        this.createConfetti();
         const alert = await this.alertCtrl.create({
           header: 'Tebrikler!',
           subHeader: 'Kelimeyi buldunuz!',
-          message: 
-          'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
+          message: 'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
           buttons: ['Tamam'],
         });
         await alert.present();
         return;
       }
-  
+
       if (this.attempts.length >= this.maxAttempts) {
-        this.gameEnded = true; 
+        this.gameEnded = true;
         const alert = await this.alertCtrl.create({
           header: 'Deneme Hakkınız Bitti!',
           subHeader: `Maalesef kelimeyi bulamadınız ${this.targetWord}`,
-          message: 
-          'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
+          message: 'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
           buttons: ['Tamam'],
         });
         await alert.present();
       }
     }
-  
+
     this.guessArray = Array(5).fill('');
+  }
+  createConfetti() {
+    // 100 konfeti parçacığı oluşturuluyor
+    this.confettiArray = Array.from({ length: 100 }, () => ({
+      left: `${Math.random() * 100}vw`,
+      top: `${Math.random() * 100}vh`,
+      width: `${Math.random() * 10 + 5}px`,
+      height: `${Math.random() * 10 + 5}px`,
+      backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      animationDelay: `${Math.random() * 2}s`,
+    }));
+
+    setTimeout(() => {
+      this.confettiArray = [];
+    }, 2000); 
   }
   
 

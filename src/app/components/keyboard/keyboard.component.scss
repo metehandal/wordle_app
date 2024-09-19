@@ -64,11 +64,13 @@
 button.green {
   background-color: #6aaa64 !important;
   border-color: #6aaa64 !important;
+  animation: scaleIn 1s ease-in;
 }
 
 button.yellow {
   background-color: #c9b458 !important;
   border-color: #c9b458 !important;
+  animation: scaleIn 1s ease-in;
 }
 
 button.gray {

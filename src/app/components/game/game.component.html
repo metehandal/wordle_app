@@ -3,8 +3,9 @@
     <div class="guess-boxes" *ngFor="let attempt of attempts">
       <div
         class="guess-box"
-        *ngFor="let guess of attempt"
+        *ngFor="let guess of attempt; let i = index"
         [ngClass]="guess.color"
+        [ngStyle]="{ animation: 'flipInX ' + (i * 0.25 + 1) + 's ease-in' }"
       >
         {{ guess.letter }}
       </div>

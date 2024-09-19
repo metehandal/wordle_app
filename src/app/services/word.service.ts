@@ -16,6 +16,11 @@ export class WordService {
     return this.http.get<any>('https://sozluk.gov.tr/gts?ara=' + word);
   }
   
+
+  getWordsByPassword() {
+    return this.http.get('assets/full_words.txt', { responseType: 'text' });
+  }
+  
 }
 
 

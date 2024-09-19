@@ -12,7 +12,7 @@
     margin-bottom: 5px;
 
     button {
-      background: #333;
+      background: #838383;
       color: #fff;
       width: 40px;
       height: 40px;
@@ -21,6 +21,7 @@
       font-size: 16px;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: 500;
 
       &:hover {
         background: #444;
@@ -41,7 +42,7 @@
     margin-top: 10px;
     width: 100%;
     button {
-      background: #333;
+      background: #838383;
       color: #fff;
       width: 100%;
       margin: 0 5px;
@@ -62,18 +63,18 @@
 }
 
 button.green {
-  background-color: #6aaa64 !important;
-  border-color: #6aaa64 !important;
+  background-color: #538d4e !important;
+  border-color: #538d4e !important;
   animation: scaleIn 1s ease-in;
 }
 
 button.yellow {
-  background-color: #c9b458 !important;
-  border-color: #c9b458 !important;
+  background-color: #b59f3b !important;
+  border-color: #b59f3b !important;
   animation: scaleIn 1s ease-in;
 }
 
 button.gray {
-  background-color: #1b1b1b !important;
-  border-color: #1b1b1b !important;
+  background-color: #3a3a3c !important;
+  border-color: #3a3a3c !important;
 }

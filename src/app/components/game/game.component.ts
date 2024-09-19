@@ -5,7 +5,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 
 interface Guess {
   letter: string;
-  color: string; // 'green', 'yellow', or 'gray'
+  color: string;
 }
 
 @Component({
@@ -16,6 +16,7 @@ interface Guess {
 export class GameComponent implements OnInit {
   wordList: string[] = [];
   targetWord: string = '';
+  targetWordData: any = {};
   attempts: Guess[][] = [];
   maxAttempts: number = 6;
   guessArray: string[] = Array(5).fill('');
@@ -37,8 +38,7 @@ export class GameComponent implements OnInit {
 
   getAttemptRows(): Guess[][] {
     const rows = [...this.attempts]; 
-    
-    // Boş deneme satırlarını ekle
+
     while (rows.length < this.maxAttempts) {
       const emptyRow: Guess[] = Array(5).fill({ letter: '', color: 'gray' });
       rows.push(emptyRow);
@@ -75,6 +75,8 @@ export class GameComponent implements OnInit {
         const data = await this.wordService.checkWordTDK(randomWord).toPromise();
         if (data && data.length > 0) {
           this.targetWord = randomWord;
+          this.targetWordData = data[0];
+          console.log('assssssssssssssss', this.targetWordData);
           wordValid = true;
           console.log('Günlük kelime belirlendi:', this.targetWord);
         } else {
@@ -87,7 +89,7 @@ export class GameComponent implements OnInit {
   }
 
   async checkGuess() {
-    if (this.gameEnded) return; // Oyun bittiğinde fonksiyonu sonlandır
+    if (this.gameEnded) return; 
   
     const currentGuess = this.guessArray.join('').trim().toUpperCase();
     if (currentGuess.length !== 5) {
@@ -126,7 +128,7 @@ export class GameComponent implements OnInit {
     }
   
     const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
-      let color = 'gray';  // Varsayılan olarak gri yapıyoruz
+      let color = 'gray';  
   
       if (letter === this.targetWord[index]) {
         color = 'green';
@@ -149,7 +151,9 @@ export class GameComponent implements OnInit {
         this.gameEnded = true; 
         const alert = await this.alertCtrl.create({
           header: 'Tebrikler!',
-          message: 'Doğru tahmin ettiniz!',
+          subHeader: 'Kelimeyi buldunuz!',
+          message: 
+          'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
           buttons: ['Tamam'],
         });
         await alert.present();
@@ -160,7 +164,9 @@ export class GameComponent implements OnInit {
         this.gameEnded = true; 
         const alert = await this.alertCtrl.create({
           header: 'Deneme Hakkınız Bitti!',
-          message: `Maalesef kelimeyi bulamadınız. Doğru kelime: ${this.targetWord}`,
+          subHeader: `Maalesef kelimeyi bulamadınız ${this.targetWord}`,
+          message: 
+          'Anlamı: ' + this.targetWordData.anlamlarListe[0].anlam,
           buttons: ['Tamam'],
         });
         await alert.present();

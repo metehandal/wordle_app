@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-keyboard',
@@ -6,6 +6,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./keyboard.component.scss']
 })
 export class KeyboardComponent {
+  @Input() keyboardLetterColors: { [key: string]: string } = {};  // Renkleri input olarak al
   @Output() letterClicked = new EventEmitter<string>();
 
   // Türkçe klavye dizilimi
@@ -18,11 +19,14 @@ export class KeyboardComponent {
   }
 
   onDeleteClick() {
-    console.log('DELETE');
     this.letterClicked.emit('DELETE');
   }
 
   onSubmitClick() {
     this.letterClicked.emit('SUBMIT');
+  }
+
+  getColorForKey(letter: string): string {
+    return this.keyboardLetterColors[letter] || '';  // Varsayılan rengi boş bırak
   }
 }

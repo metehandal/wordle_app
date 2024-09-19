@@ -1,16 +1,28 @@
 <div class="keyboard">
   <div class="row">
-    <button *ngFor="let letter of row1" (click)="onLetterClick(letter)">
+    <button
+      *ngFor="let letter of row1"
+      (click)="onLetterClick(letter)"
+      [ngClass]="getColorForKey(letter)"
+    >
       {{ letter }}
     </button>
   </div>
   <div class="row">
-    <button *ngFor="let letter of row2" (click)="onLetterClick(letter)">
+    <button
+      *ngFor="let letter of row2"
+      (click)="onLetterClick(letter)"
+      [ngClass]="getColorForKey(letter)"
+    >
       {{ letter }}
     </button>
   </div>
   <div class="row">
-    <button *ngFor="let letter of row3" (click)="onLetterClick(letter)">
+    <button
+      *ngFor="let letter of row3"
+      (click)="onLetterClick(letter)"
+      [ngClass]="getColorForKey(letter)"
+    >
       {{ letter }}
     </button>
   </div>

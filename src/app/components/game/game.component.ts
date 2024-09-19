@@ -20,7 +20,9 @@ export class GameComponent implements OnInit {
   maxAttempts: number = 6;
   guessArray: string[] = Array(5).fill('');
   guessForm: FormGroup;
-  gameEnded: boolean = false; // Oyun bitiş durumu
+  gameEnded: boolean = false; 
+  keyboardLetterColors: { [key: string]: string } = {};
+
 
   constructor(private wordService: WordService, private toastCtrl: ToastController, private alertCtrl: AlertController) {
     this.guessForm = new FormGroup({
@@ -34,7 +36,7 @@ export class GameComponent implements OnInit {
   }
 
   getAttemptRows(): Guess[][] {
-    const rows = [...this.attempts]; // Denenmiş kelimeleri al
+    const rows = [...this.attempts]; 
     
     // Boş deneme satırlarını ekle
     while (rows.length < this.maxAttempts) {
@@ -48,7 +50,7 @@ export class GameComponent implements OnInit {
   getEmptyAttemptRows(): any[] {
     const emptyRows = [];
     for (let i = this.attempts.length + 1; i < this.maxAttempts; i++) {
-      emptyRows.push(Array(5).fill('')); // 5 harfli boş kutular
+      emptyRows.push(Array(5).fill('')); 
     }
     return emptyRows;
   }
@@ -56,7 +58,7 @@ export class GameComponent implements OnInit {
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.wordService.getWords().subscribe(
-        (words: string) => resolve(words.split('\n').map(word => word.trim().toUpperCase())), // Büyük harfe çevir
+        (words: string) => resolve(words.split('\n').map(word => word.trim().toUpperCase())), 
         (error) => reject(error)
       );
     });
@@ -86,22 +88,22 @@ export class GameComponent implements OnInit {
 
   async checkGuess() {
     if (this.gameEnded) return; // Oyun bittiğinde fonksiyonu sonlandır
-
+  
     const currentGuess = this.guessArray.join('').trim().toUpperCase();
     if (currentGuess.length !== 5) {
       const toast = await this.toastCtrl.create({
         message: 'Yetersiz harf',
         duration: 1500,
         position: 'top',
-        mode: "ios",
+        mode: 'ios',
         animated: true,
         icon: 'warning',
-        color: "danger"
+        color: 'danger'
       });
       toast.present();
       return;
     }
-
+  
     try {
       const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase('tr-TR')).toPromise();
       if (data.error) {
@@ -109,10 +111,10 @@ export class GameComponent implements OnInit {
           message: 'Bu kelime TDK’da bulunamadı',
           duration: 1500,
           position: 'top',
-          mode: "ios",
+          mode: 'ios',
           animated: true,
           icon: 'warning',
-          color: "danger"
+          color: 'danger'
         });
         toast.present();
         this.guessArray = Array(5).fill(''); 
@@ -122,22 +124,29 @@ export class GameComponent implements OnInit {
       console.error('Kelime kontrolü sırasında bir hata oluştu:', error);
       return;
     }
-
+  
     const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
+      let color = 'gray';  // Varsayılan olarak gri yapıyoruz
+  
       if (letter === this.targetWord[index]) {
-        return { letter, color: 'green' };
+        color = 'green';
       } else if (this.targetWord.includes(letter)) {
-        return { letter, color: 'yellow' };
-      } else {
-        return { letter, color: 'gray' };
+        color = 'yellow';
       }
+  
+      if (!this.keyboardLetterColors[letter] || this.keyboardLetterColors[letter] === 'gray') {
+        this.keyboardLetterColors[letter] = color;
+      }
+  
+      return { letter, color };
     });
 
+  
     if (!this.gameEnded) {
       this.attempts.push(guessWithColors);
-
+  
       if (currentGuess === this.targetWord) {
-        this.gameEnded = true; // Oyun bitiş durumu
+        this.gameEnded = true; 
         const alert = await this.alertCtrl.create({
           header: 'Tebrikler!',
           message: 'Doğru tahmin ettiniz!',
@@ -146,9 +155,9 @@ export class GameComponent implements OnInit {
         await alert.present();
         return;
       }
-
+  
       if (this.attempts.length >= this.maxAttempts) {
-        this.gameEnded = true; // Oyun bitiş durumu
+        this.gameEnded = true; 
         const alert = await this.alertCtrl.create({
           header: 'Deneme Hakkınız Bitti!',
           message: `Maalesef kelimeyi bulamadınız. Doğru kelime: ${this.targetWord}`,
@@ -157,9 +166,10 @@ export class GameComponent implements OnInit {
         await alert.present();
       }
     }
-
+  
     this.guessArray = Array(5).fill('');
   }
+  
 
   normalizeTurkishCharacter(letter: string): string {
     const mapping: { [key: string]: string } = {
@@ -177,7 +187,6 @@ export class GameComponent implements OnInit {
   handleKeyboardInput(letter: string) {
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
-      console.log('currentPosition', currentPosition);
   
       if (currentPosition >= 0 && currentPosition < this.guessArray.length) {
         this.guessArray[currentPosition] = ''; 

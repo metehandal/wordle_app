@@ -15,12 +15,8 @@ export class WordService {
   checkWordTDK(word: string): Observable<any> {
     return this.http.get<any>('https://sozluk.gov.tr/gts?ara=' + word);
   }
-  
 
   getWordsByPassword() {
     return this.http.get('assets/full_words.txt', { responseType: 'text' });
   }
-  
 }
-
-

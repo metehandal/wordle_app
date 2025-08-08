@@ -21,14 +21,18 @@ export class GameComponent implements OnInit {
   maxAttempts: number = 6;
   guessArray: string[] = Array(5).fill('');
   guessForm: FormGroup;
-  gameEnded: boolean = false; 
+  gameEnded: boolean = false;
   keyboardLetterColors: { [key: string]: string } = {};
   isWinner: boolean = false;
   confettiArray: any[] = [];
 
-  constructor(private wordService: WordService, private toastCtrl: ToastController, private alertCtrl: AlertController) {
+  constructor(
+    private wordService: WordService,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController
+  ) {
     this.guessForm = new FormGroup({
-      guess: new FormControl('')
+      guess: new FormControl(''),
     });
   }
 
@@ -38,28 +42,29 @@ export class GameComponent implements OnInit {
   }
 
   getAttemptRows(): Guess[][] {
-    const rows = [...this.attempts]; 
+    const rows = [...this.attempts];
 
     while (rows.length < this.maxAttempts) {
       const emptyRow: Guess[] = Array(5).fill({ letter: '', color: 'gray' });
       rows.push(emptyRow);
     }
-  
+
     return rows;
   }
 
   getEmptyAttemptRows(): any[] {
     const emptyRows = [];
     for (let i = this.attempts.length + 1; i < this.maxAttempts; i++) {
-      emptyRows.push(Array(5).fill('')); 
+      emptyRows.push(Array(5).fill(''));
     }
     return emptyRows;
   }
-  
+
   loadWords(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.wordService.getWords().subscribe(
-        (words: string) => resolve(words.split('\n').map(word => word.trim().toUpperCase())), 
+        (words: string) =>
+          resolve(words.split('\n').map((word) => word.trim().toUpperCase())),
         (error) => reject(error)
       );
     });
@@ -73,7 +78,9 @@ export class GameComponent implements OnInit {
       const randomWord = this.wordList[randomIndex];
 
       try {
-        const data = await this.wordService.checkWordTDK(randomWord).toPromise();
+        const data = await this.wordService
+          .checkWordTDK(randomWord)
+          .toPromise();
         if (data && data.length > 0) {
           this.targetWord = randomWord;
           this.targetWordData = data[0];
@@ -100,14 +107,16 @@ export class GameComponent implements OnInit {
         mode: 'ios',
         animated: true,
         icon: 'warning',
-        color: 'danger'
+        color: 'danger',
       });
       toast.present();
       return;
     }
 
     try {
-      const data = await this.wordService.checkWordTDK(currentGuess.toLocaleLowerCase('tr-TR')).toPromise();
+      const data = await this.wordService
+        .checkWordTDK(currentGuess.toLocaleLowerCase('tr-TR'))
+        .toPromise();
       if (data.error) {
         const toast = await this.toastCtrl.create({
           message: 'Bu kelime TDK’da bulunamadı',
@@ -116,7 +125,7 @@ export class GameComponent implements OnInit {
           mode: 'ios',
           animated: true,
           icon: 'warning',
-          color: 'danger'
+          color: 'danger',
         });
         toast.present();
         this.guessArray = Array(5).fill('');
@@ -127,21 +136,26 @@ export class GameComponent implements OnInit {
       return;
     }
 
-    const guessWithColors: Guess[] = currentGuess.split('').map((letter, index) => {
-      let color = 'gray';
+    const guessWithColors: Guess[] = currentGuess
+      .split('')
+      .map((letter, index) => {
+        let color = 'gray';
 
-      if (letter === this.targetWord[index]) {
-        color = 'green';
-      } else if (this.targetWord.includes(letter)) {
-        color = 'yellow';
-      }
+        if (letter === this.targetWord[index]) {
+          color = 'green';
+        } else if (this.targetWord.includes(letter)) {
+          color = 'yellow';
+        }
 
-      if (!this.keyboardLetterColors[letter] || this.keyboardLetterColors[letter] === 'gray') {
-        this.keyboardLetterColors[letter] = color;
-      }
+        if (
+          !this.keyboardLetterColors[letter] ||
+          this.keyboardLetterColors[letter] === 'gray'
+        ) {
+          this.keyboardLetterColors[letter] = color;
+        }
 
-      return { letter, color };
-    });
+        return { letter, color };
+      });
 
     if (!this.gameEnded) {
       this.attempts.push(guessWithColors);
@@ -187,46 +201,45 @@ export class GameComponent implements OnInit {
 
     setTimeout(() => {
       this.confettiArray = [];
-    }, 2000); 
+    }, 2000);
   }
-  
 
   normalizeTurkishCharacter(letter: string): string {
     const mapping: { [key: string]: string } = {
-      'ı': 'I', 
-      'i': 'İ', 
-      'ç': 'Ç',
-      'ğ': 'Ğ',
-      'ö': 'Ö',
-      'ş': 'Ş',
-      'ü': 'Ü'
+      ı: 'I',
+      i: 'İ',
+      ç: 'Ç',
+      ğ: 'Ğ',
+      ö: 'Ö',
+      ş: 'Ş',
+      ü: 'Ü',
     };
     return mapping[letter] || letter.toUpperCase();
   }
-  
+
   handleKeyboardInput(letter: string) {
     if (letter === 'DELETE') {
       const currentPosition = this.getCurrentPosition() - 1;
-  
+
       if (currentPosition >= 0 && currentPosition < this.guessArray.length) {
-        this.guessArray[currentPosition] = ''; 
+        this.guessArray[currentPosition] = '';
       }
     } else if (letter === 'SUBMIT') {
-      this.checkGuess(); 
+      this.checkGuess();
     } else if (this.getCurrentPosition() < 5) {
       const normalizedLetter = this.normalizeTurkishCharacter(letter);
       const allowedChars = /^[A-ZÇĞİÖŞÜ]$/;
       if (allowedChars.test(normalizedLetter)) {
-        this.guessArray[this.getCurrentPosition()] = normalizedLetter; 
+        this.guessArray[this.getCurrentPosition()] = normalizedLetter;
       }
     }
   }
-  
+
   getCurrentPosition(): number {
-    const position = this.guessArray.findIndex(letter => letter === '');
+    const position = this.guessArray.findIndex((letter) => letter === '');
     return position === -1 ? this.guessArray.length : position;
   }
-  
+
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     const letter = event.key;
